@@ -422,7 +422,7 @@ window.onload = function(){
         window.location.href = '/index.html';
     }
     // current path is index page
-    if(window.location.pathname === '/index.html'){
+    if(window.location.pathname === '/Shopping-Cart-1/index.html'){
         
         // search product by searching
         productSearchBar.addEventListener('input',(event)=>{
@@ -658,8 +658,6 @@ window.onload = function(){
             
         })
     }
-    
-    
 }
 
 

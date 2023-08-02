@@ -32,8 +32,10 @@ let cartCardArray = [];
 let cartArray = [];
 let currentCategoryBtn = [];
 let ratingValue = 1;
-
 let productArray = [];
+
+const repositoryName = "Shopping-Cart-1";
+
 const api = "https://fakestoreapi.com/products";
 
 function getRandomColor(){
@@ -364,7 +366,7 @@ function getUserSession(){
 }
 function logout(){
     sessionStorage.removeItem('user');
-    window.location.href = '/index.html';
+    window.location.href = `/${repositoryName}/index.html`;
 }
 function showMessage(message){
     messageAlert.style.display = 'block';
@@ -396,33 +398,33 @@ function createProfileNavMenu(currentUser){
     // add event listner to profile
     profileBtn.addEventListener('click',(event)=>{
         setTimeout(()=>{
-            window.location.href = '/profile.html';
+            window.location.href = `${repositoryName}/profile.html`;
         },1000)
     })
     // add event listner to cart
     cartBtn.addEventListener('click',(event)=>{
         setTimeout(()=>{
-            window.location.href = '/cart.html';
+            window.location.href = `/${repositoryName}/cart.html`;
         })
     })
 }
 window.onload = function(){
     // user restrictions pagefor cart and profile
-    if(window.location.pathname === '/cart.html' && !sessionStorage.getItem('user')){
-        window.location.href = '/index.html';
+    if(window.location.pathname === `/${repositoryName}/cart.html` && !sessionStorage.getItem('user')){
+        window.location.href = `/${repositoryName}/index.html`;
     }
-    if(window.location.pathname === '/profile.html' && !sessionStorage.getItem('user')){
-        window.location.href = '/index.html';
+    if(window.location.pathname === `/${repositoryName}/profile.html` && !sessionStorage.getItem('user')){
+        window.location.href = `/${repositoryName}/index.html`;
     }
     // user restrictions pagefor signup and login while user already loggedin
-    if(window.location.pathname === '/signup.html' && sessionStorage.getItem('user')){
-        window.location.href = '/index.html';
+    if(window.location.pathname === `/${repositoryName}/signup.html` && sessionStorage.getItem('user')){
+        window.location.href = `/${repositoryName}/index.html`;
     }
-    if(window.location.pathname === '/login.html' && sessionStorage.getItem('user')){
-        window.location.href = '/index.html';
+    if(window.location.pathname === `/${repositoryName}/login.html` && sessionStorage.getItem('user')){
+        window.location.href = `/${repositoryName}/index.html`;
     }
     // current path is index page
-    if(window.location.pathname === '/Shopping-Cart-1/index.html'){
+    if(window.location.pathname === `/${repositoryName}/index.html`){
         
         // search product by searching
         productSearchBar.addEventListener('input',(event)=>{
@@ -479,12 +481,12 @@ window.onload = function(){
         loginButton.addEventListener('click',(event)=>{
             console.log(event.target);
             // redirect to login page
-            window.location.href = './login.html'
+            window.location.href = `/${repositoryName}/login.html`;
         })
         signupButton.addEventListener('click',(event)=>{
             console.log(event.target);
             // redirect to signup page
-            window.location.href = '/signup.html'
+            window.location.href = `/${repositoryName}/signup.html`
         })
 
         let currentUser = getUserSession();
@@ -500,7 +502,7 @@ window.onload = function(){
         
     }
 
-    if(window.location.pathname === '/profile.html' && sessionStorage.getItem('user')){
+    if(window.location.pathname === `/${repositoryName}/profile.html` && sessionStorage.getItem('user')){
         let currentUser = getUserSession();
         fName.value = currentUser['fName'];
         lName.value = currentUser['lName'];
@@ -522,7 +524,7 @@ window.onload = function(){
                     saveUserSession(user);
                     alert("Name update successfull redirecting to home page");
                     setTimeout(()=>{
-                        window.location.href = '/index.html';
+                        window.location.href = `/${repositoryName}/index.html`;
                     },2000)
                 }
             }
@@ -560,7 +562,7 @@ window.onload = function(){
         })
     }
     // add product card to my cart page
-    if(window.location.pathname === '/cart.html' && sessionStorage.getItem('user')){
+    if(window.location.pathname === `/${repositoryName}/cart.html` && sessionStorage.getItem('user')){
         
         let currentUser = getUserSession();
         if(currentUser['accessToken']){
@@ -580,7 +582,7 @@ window.onload = function(){
             paymentBtn.style.display = 'none';  
         }     
     }
-    if(window.location.pathname === '/signup.html'){
+    if(window.location.pathname === `/${repositoryName}/signup.html`){
 
         signupForm.addEventListener('click',function(event){
             console.log(event.target);
@@ -627,11 +629,11 @@ window.onload = function(){
                 saveUser(existingUsers);
             }
             setTimeout(function(){
-                window.location.href = '/login.html';
+                window.location.href = `/${repositoryName}/login.html`;
             },1000);
         })
     }
-    if(window.location.pathname === '/login.html'){
+    if(window.location.pathname === `/${repositoryName}/login.html`){
 
         loginForm.addEventListener('click', (event) =>{
             event.preventDefault();
@@ -650,7 +652,7 @@ window.onload = function(){
                 saveUserSession(currentUser);  
                 // redirect to index page 
                 setTimeout(() => {
-                    window.location.href = '/index.html';
+                    window.location.href = `/${repositoryName}/index.html`;
                 },1000)
             }else{
                 showMessage("You entered wrong inforamation");

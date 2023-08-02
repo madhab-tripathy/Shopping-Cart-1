@@ -424,7 +424,7 @@ window.onload = function(){
         window.location.href = `/${repositoryName}/index.html`;
     }
     // current path is index page
-    if(window.location.pathname === `/index.html`){
+    if(window.location.pathname === `/${repositoryName}/index.html`){
         
         // search product by searching
         productSearchBar.addEventListener('input',(event)=>{

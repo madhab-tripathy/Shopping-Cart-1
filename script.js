@@ -398,7 +398,7 @@ function createProfileNavMenu(currentUser){
     // add event listner to profile
     profileBtn.addEventListener('click',(event)=>{
         setTimeout(()=>{
-            window.location.href = `${repositoryName}/profile.html`;
+            window.location.href = `/${repositoryName}/profile.html`;
         },1000)
     })
     // add event listner to cart

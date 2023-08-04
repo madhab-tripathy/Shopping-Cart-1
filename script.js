@@ -33,9 +33,10 @@ let cartArray = [];
 let currentCategoryBtn = [];
 let ratingValue = 1;
 let productArray = [];
+let totalPrice = 0;
 
 const repositoryName = "Shopping-Cart-1";
-
+// const repositoryName = '';
 const api = "https://fakestoreapi.com/products";
 
 function getRandomColor(){
@@ -66,8 +67,6 @@ async function getProduct(){
         console.error("Failed to load data",Error);
     }
 }
-
-
 
 function checkItemFilter(data,filterChecklist,key){
     if(filterChecklist.length === 0){
@@ -244,12 +243,12 @@ function addProductToShop(id, productContainer,title, description, image, size, 
      */
     let user = getUserSession();
     let userList = getUsers();
-    let userFromStorage = isUserPresent(userList,user);
-    if(window.location.pathname !== '/cart.html' && user.length !== 0 && userFromStorage !== '') {
+    let userFromStorage = getCurrentUserFromLocalStorage(userList,user);
+    if(window.location.pathname !== `/${repositoryName}/cart.html` && user.length !== 0 && userFromStorage !== '') {
         let p = document.querySelectorAll('.btn.add-to-cart-btn');
         addToCart(p,userList,userFromStorage);
     }
-    if(window.location.pathname === '/cart.html' && user.length !== 0 && userFromStorage !== ''){
+    if(window.location.pathname === `/${repositoryName}/cart.html` && user.length !== 0 && userFromStorage !== ''){
         let p = document.querySelectorAll('.btn.add-to-cart-btn');
         cartBtn.innerText = 'Remove From Cart';
         removeFromCart(p,userList,userFromStorage);
@@ -267,8 +266,7 @@ function addToCart(cartBtn,userList,userFromStorage){
                 currentUserCart.push(getCurrentProduct(currentId));
                 saveUser(userList);
             }else{
-                alert("Item already in cart");
-                return;
+                window.location.href = `/${repositoryName}/cart.html`;
             }
         })
     })
@@ -276,7 +274,7 @@ function addToCart(cartBtn,userList,userFromStorage){
 }
 
 function getTotalPrice(cartItem){
-    let totalPrice = 0;
+    totalPrice = 0;
     cartItem.forEach((item)=>{
         totalPrice += parseInt(item['price']);
     })
@@ -290,17 +288,22 @@ function removeFromCart(cartBtn,userList,userFromStorage){
             event.preventDefault();
             for(let i = 0; i < currentUserCart.length; i++){
                 if(currentUserCart[i].id === parseInt(event.target.id)){
+                    console.log(currentUserCart[i].price);
+                    totalPrice = totalPrice - currentUserCart[i].price;
+                    if(totalPrice >= 0){
+                        sessionStorage.setItem('checkOut',JSON.stringify({price:totalPrice}))
+                        document.getElementById('pay-btn').innerText = `$${totalPrice} Check Out`;
+                    }
                     currentUserCart.splice(i, 1);
                 }
             }
             saveUser(userList);
-            window.location.href = '';
+            setTimeout(()=>{
+                window.location.href = '';
+            },2000)
         })
     })
 }
-
-
-
 function productAlreadyInCart(currentUserCart,id){
     for(let i = 0; i < currentUserCart.length; i++){
         if(currentUserCart[i].id === id){
@@ -372,7 +375,7 @@ function showMessage(message){
     messageAlert.style.display = 'block';
     messageAlert.innerText = message;
 }
-function isUserPresent(userList,currentUser){
+function getCurrentUserFromLocalStorage(userList,currentUser){
     let presentUser = '';
     userList.forEach((user)=>{
         if(user['accessToken'] === currentUser['accessToken'] && user['email'] === currentUser['email']){
@@ -398,7 +401,7 @@ function createProfileNavMenu(currentUser){
     // add event listner to profile
     profileBtn.addEventListener('click',(event)=>{
         setTimeout(()=>{
-            window.location.href = `${repositoryName}/profile.html`;
+            window.location.href = `/${repositoryName}/profile.html`;
         },1000)
     })
     // add event listner to cart
@@ -515,7 +518,7 @@ window.onload = function(){
         editProfileBtn.addEventListener('click',(event)=>{
             event.preventDefault();
             let userList = getUsers();
-            let user = isUserPresent(userList,currentUser);
+            let user = getCurrentUserFromLocalStorage(userList,currentUser);
             if(user !== ''){
                 if(fName.value.trim() !== '' && lName.value.trim() !== ''){
                     user['fName'] = fName.value;
@@ -535,7 +538,7 @@ window.onload = function(){
         updatePasswordBtn.addEventListener('click',(event)=>{
             event.preventDefault();
             let userList = getUsers();
-            let user = isUserPresent(userList,currentUser);
+            let user = getCurrentUserFromLocalStorage(userList,currentUser);
             if(user !== ''){
                 if(oldPassword.value === currentUser['password']){
                     if(newPassword.value !== updatePassword.value){
@@ -570,17 +573,24 @@ window.onload = function(){
             createProfileNavMenu(currentUser);
         } 
         const usersList = JSON.parse(localStorage.getItem('users'));
-        let user = isUserPresent(getUsers(),currentUser);
-        let totalPrice = 0;
+        let user = getCurrentUserFromLocalStorage(getUsers(),currentUser);
+        totalPrice = 0;
         if(currentUser['accessToken'] === user['accessToken']){
-            console.log(user['cart']);
             totalPrice = getTotalPrice(user['cart']);
+            sessionStorage.setItem('checkOut',JSON.stringify({price:totalPrice}));
             showProducts(user['cart']);
-        }  
-        document.getElementById('pay-btn').innerText = `$${totalPrice} Check Out`;
-        if(document.getElementById('filtered-products').innerText === ''){
-            paymentBtn.style.display = 'none';  
-        }     
+        }
+        if(document.getElementById('filtered-products').innerText !== ''){
+            paymentBtn.style.display = 'block';  
+            document.getElementById('pay-btn').innerText = `$${totalPrice} Check Out`;
+        }else{
+            paymentBtn.style.display = 'none';
+        }
+        var rzp1 = new Razorpay(options);
+        document.getElementById('pay-btn').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
     }
     if(window.location.pathname === `/${repositoryName}/signup.html`){
 
@@ -662,6 +672,36 @@ window.onload = function(){
     }
 }
 
-
-
-
+// Razorpay integration
+var options = {
+    key: "rzp_test_xV39ZNbgU1Du4V", // Enter the Key ID generated from the Dashboard
+    amount: JSON.parse(sessionStorage.getItem('checkOut')).price*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    currency: "INR",
+    name: "MyShop Checkout",
+    description: "This is your order", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    prefill: { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+    },
+    notes: {
+        "address": "Razorpay Corporate Office"
+    },
+    theme: {
+        "color": "#3399cc"
+    },
+    handler: function () { // run a function when your payment is successfull
+        // empty cart list
+        let userList = getUsers();
+        let user = getCurrentUserFromLocalStorage(userList,JSON.parse(sessionStorage.getItem('user')));
+        user.cart = [];
+        saveUser(userList);
+        // reset the checkout price
+        sessionStorage.removeItem('checkOut');
+        JSON.stringify(sessionStorage.setItem('checkOut',{price:0}));
+        // redirect to home page
+        location.href = `/${repositoryName}/index.html`;
+    },
+    image:
+      "https://www.mintformations.co.uk/blog/wp-content/uploads/2020/05/shutterstock_583717939.jpg",
+};

@@ -27,6 +27,7 @@ html{
 }
 #payment-btn{
     padding-left: 2.3rem;  
+    display: none;
 }
 #pay-btn{
     display: flex;

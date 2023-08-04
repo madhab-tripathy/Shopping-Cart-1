@@ -298,9 +298,7 @@ function removeFromCart(cartBtn,userList,userFromStorage){
                 }
             }
             saveUser(userList);
-            setTimeout(()=>{
-                window.location.href = '';
-            },2000)
+            window.location.href = '';
         })
     })
 }

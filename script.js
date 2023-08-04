@@ -298,7 +298,7 @@ function removeFromCart(cartBtn,userList,userFromStorage){
                 }
             }
             saveUser(userList);
-            window.location.href = '';
+            window.location.href = `/${repositoryName}/cart.html`;
         })
     })
 }
@@ -406,7 +406,7 @@ function createProfileNavMenu(currentUser){
     cartBtn.addEventListener('click',(event)=>{
         setTimeout(()=>{
             window.location.href = `/${repositoryName}/cart.html`;
-        })
+        },1000)
     })
 }
 window.onload = function(){
